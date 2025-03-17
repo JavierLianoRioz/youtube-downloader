@@ -5,16 +5,16 @@ $global:Config = @{
         Mood = "happy"
     }
     Paths = @{
-        History = "history.json"
-        References = "references.txt"
-        Downloads = "downloads"
+        History = "$PSScriptRoot\..\data\history.json"
+        References = "$PSScriptRoot\..\data\references.txt"
+        Downloads = "$PSScriptRoot\..\downloads"
     }
 }
 
 # Importar módulos
-. .\gui.ps1
-. .\download.ps1
-. .\utils.ps1
+. "$PSScriptRoot\gui.ps1"
+. "$PSScriptRoot\download.ps1"
+. "$PSScriptRoot\utils.ps1"
 
 # Inicializar directorios
 Initialize-Directories
@@ -90,8 +90,8 @@ function Start-MainProcess {
 }
 
 # Crear directorio de descargas si no existe
-if (-not (Test-Path "downloads")) {
-    New-Item -ItemType Directory -Path "downloads" | Out-Null
+if (-not (Test-Path $global:Config.Paths.Downloads)) {
+    New-Item -ItemType Directory -Path $global:Config.Paths.Downloads | Out-Null
 }
 
 # Iniciar proceso principal

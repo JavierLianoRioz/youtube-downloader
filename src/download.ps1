@@ -29,7 +29,7 @@ function Start-Download {
     )
     
     # Verificar si el video ya fue descargado
-    $historyPath = "history.json"
+    $historyPath = $global:Config.Paths.History
     if (Test-Path $historyPath) {
         $history = Get-Content $historyPath -Raw | ConvertFrom-Json
         if ($history | Where-Object { $_.url -eq $url }) {
@@ -51,7 +51,7 @@ function Start-Download {
         $info = yt-dlp -o $output $url --print-json | ConvertFrom-Json
         
         # Registrar la descarga en el historial con datos para APA
-        $historyPath = "history.json"
+        $historyPath = $global:Config.Paths.History
         
         # Crear el archivo si no existe
         if (-not (Test-Path $historyPath)) {
@@ -109,7 +109,7 @@ function Initialize-Download {
     Start-Download -url $url
     
     # Mostrar referencia APA
-    $history = Get-Content "history.json" -Raw | ConvertFrom-Json
+    $history = Get-Content $global:Config.Paths.History -Raw | ConvertFrom-Json
     $lastEntry = $history[-1]
     Write-Host "`nReferencia APA:" -ForegroundColor Yellow
     Write-Host (Get-APAReference $lastEntry) -ForegroundColor Cyan

@@ -82,7 +82,7 @@ function Show-History {
     Write-Host "`nHistorial de Descargas" -ForegroundColor Yellow
     Write-Host "====================" -ForegroundColor Cyan
     
-    $history = Get-Content "history.json" -Raw | ConvertFrom-Json
+    $history = Get-Content $global:Config.Paths.History -Raw | ConvertFrom-Json
     if ($history.Count -eq 0) {
         Write-Host "No hay descargas registradas." -ForegroundColor Red
         return

@@ -11,6 +11,6 @@ if %ERRORLEVEL% neq 0 (
 )
 
 REM Ejecutar el script principal
-%PowerShellPath% -ExecutionPolicy Bypass -NoProfile -File "%~dp0main.ps1"
+%PowerShellPath% -ExecutionPolicy Bypass -NoProfile -File "%~dp0..\src\main.ps1"
 
 ENDLOCAL
