@@ -1,35 +1,32 @@
 # Configuración inicial
-$global:Guide = @{
-    Name = "Yuki"
-    Mood = "happy"
+$global:Config = @{
+    Guide = @{
+        Name = "Kitty"
+        Mood = "happy"
+    }
+    Paths = @{
+        History = "history.json"
+        References = "references.txt"
+        Downloads = "downloads"
+    }
 }
 
 # Importar módulos
 . .\gui.ps1
 . .\download.ps1
+. .\utils.ps1
+
+# Inicializar directorios
+Initialize-Directories
 
 # Mostrar interfaz inicial
 Show-WelcomeScreen
 
 function Get-APAFromHistory {
-    $historyPath = "history.json"
-    $referencesPath = "references.txt"
+    $history = Get-History
     
-    # Verificar si existe el historial
-    if (-not (Test-Path $historyPath)) {
-        $global:Guide.Mood = "confused"
-        Show-Guide
-        Write-Host "`nNo hay historial de descargas disponible." -ForegroundColor Red
-        Start-Sleep -Seconds 1
-        return
-    }
-    
-    $history = Get-Content $historyPath -Raw | ConvertFrom-Json
     if ($history.Count -eq 0) {
-        $global:Guide.Mood = "confused"
-        Show-Guide
-        Write-Host "`nNo hay descargas registradas en el historial." -ForegroundColor Red
-        Start-Sleep -Seconds 1
+        Show-Error "No hay descargas registradas en el historial."
         return
     }
     
@@ -40,31 +37,16 @@ function Get-APAFromHistory {
         return
     }
     
-    if ($choice -match '^\d+$' -and $choice -le $history.Count -and $choice -gt 0) {
+    if (Validate-Choice $choice $history.Count) {
         $entry = $history[$choice - 1]
         $reference = Get-APAReference $entry
-        
-        # Leer referencias existentes
-        $references = @()
-        if (Test-Path $referencesPath) {
-            $references = Get-Content $referencesPath
-        }
-        
-        # Agregar nueva referencia y ordenar
-        $references += $reference
-        $references = $references | Sort-Object
-        
-        # Guardar referencias ordenadas
-        Set-Content -Path $referencesPath -Value $references
+        Save-Reference $reference
         Write-Host "`nReferencia APA guardada y ordenada en references.txt" -ForegroundColor Green
         Write-Host "`nPresiona cualquier tecla para continuar..." -ForegroundColor Gray
         $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
     }
     else {
-        $global:Guide.Mood = "confused"
-        Show-Guide
-        Write-Host "`nOpción no válida. Por favor selecciona un número de la lista." -ForegroundColor Red
-        Start-Sleep -Seconds 1
+        Show-Error "Opción no válida. Por favor selecciona un número de la lista."
     }
 }
 
